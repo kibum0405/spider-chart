@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<Spider/>
+		<div>123</div>
 	</div>
 </template>
 
