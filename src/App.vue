@@ -1,12 +1,11 @@
 <template>
 	<div>
 		<Spider/>
-		<div>123</div>
 	</div>
 </template>
 
 <script>
-import Spider from './spider/spider-chart.vue';
+import Spider from './spider/spider-chart';
 
 export default {
 	components: {

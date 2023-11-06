@@ -3,6 +3,7 @@
         <img :src="user.avatar" alt="User's avatar" class="user-avatar">
         <h2>{{ user.name }}</h2>
         <div>{{ user.bio }}</div>
+        <v-card>123</v-card>
     </div>
 </template>
   
