@@ -1,10 +1,12 @@
-// Styles
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+// src/plugins/vuetify.js
+import Vue from 'vue';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.min.css'; // Vuetify 스타일
 
-// Vuetify
-import { createVuetify } from 'vuetify'
+Vue.use(Vuetify);
 
-export default createVuetify(
-  // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
-)
+const opts = {
+
+}; // 여기에 Vuetify 옵션 추가 가능
+
+export default new Vuetify(opts);
