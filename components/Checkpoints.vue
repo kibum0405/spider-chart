@@ -1,13 +1,13 @@
-<template>
+<!-- <template>
   <div>
     <div v-for="(perspective, index) in perspectives" :key="index">
-      <h2>{{ perspective.name }}</h2>123
+      <h2>{{ perspective.name }}</h2>
       <div v-for="(level, levelIndex) in perspective.levels" :key="levelIndex">
         <h3>Level {{ levelIndex + 1 }}</h3>
         <div>
           <label v-for="(checkpoint, checkpointIndex) in level.checkpoints" :key="checkpointIndex">
             <input type="checkbox" v-model="checkpoint.checked" @change="updateLevelCompletion(perspective, level)">
-            {{ checkpoint.text }}
+            {{ checkpoint.text }}123
           </label>
         </div>
       </div>
@@ -121,4 +121,4 @@ export default {
     },
   },
 };
-</script>
+</script> -->

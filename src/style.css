@@ -1,12 +1,30 @@
 * {
-  font-family: sans-serif;
+    font-family: sans-serif;
 }
-body {
-  margin:0 !important;
-  padding:0 !important;
+
+.clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+html, body, #app {
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
 svg {
-  display: block;
-  margin: auto;
+    display: block;
+    margin: auto;
+}
+
+.col, .row {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.checkpoints-container {
+    overflow: auto; height:100vh;
 }
