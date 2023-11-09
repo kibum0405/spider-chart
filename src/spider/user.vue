@@ -8,8 +8,7 @@
                 />
             </div>
             <div style="position: relative; text-align: start; margin-left:10px; margin-top:-40px;">
-                <div>소속 : {{ user.Affiliation }}</div>
-                <div>성함 : {{ user.name }}</div>
+                
                 <v-list dense style="position: absolute; text-align: center;">
                     <v-list-group
                         no-action
@@ -45,8 +44,6 @@ export default {
     data() {
         return {
             user: {
-                name: '박기범',
-                Affiliation: 'uEngine',
                 avatar: 'https://via.placeholder.com/150'
             },
             itemsOpen: false,

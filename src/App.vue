@@ -4,15 +4,17 @@
 			<v-text-field
 				label="새 그룹 이름"
 				v-model="newGroupName"
-				@keyup.enter="addNewGroup"
+				@keyup.enter="addNewGroup()"
 			></v-text-field>
 
 			<v-treeview
-				:items="treeItems"
+				:items.sync='treeItems'
 				activatable
 				item-key="name"
 				@click.stop
 				style="cursor: pointer;"
+				return-object
+				@update:active="handleTreeItemClick"
 			>
 				<template v-slot:prepend="{ item, open }">
 					<v-icon v-if="!item.children" small>mdi-account</v-icon>
@@ -54,7 +56,11 @@
 				</template>
 			</v-treeview>
 		</div>
-		<spiderChart :chart-data="selectedItem" style="flex: 1;"/>
+		<spiderChart 
+			@changeCheckpointSave="saveToLocalStorage"
+			ref="mSpiderChart"
+			style="flex: 1;"
+		/>
 	</div>
 </template>
 
@@ -74,13 +80,16 @@ export default {
 			newMemberName: '',
 			activeGroup: null,
 			treeItems: [],
-			selectedItem: null
+			selectedItem: null,
 		}
 	},
 	mounted() {
 		this.loadFromLocalStorage();
 	},
 	methods: {
+		handleTreeItemClick(item) {
+			this.$refs.mSpiderChart.selectedTree(item[0])
+		},
 		activateTextField(groupName) {
 			this.activeGroup = groupName;
 		},
@@ -102,7 +111,9 @@ export default {
 			if (this.newGroupName.trim()) {
 				const newGroup = {
 					name: this.newGroupName,
-					children: []
+					children: [],
+					nodeLevel: 0,
+					perspectives: [],
 				};
 				this.treeItems.push(newGroup);
 				this.newGroupName = '';
@@ -113,7 +124,9 @@ export default {
 			if (this.newMemberName.trim()) {
 				const newItem = {
 					name: this.newMemberName,
-					children: []
+					children: [],
+					nodeLevel: item.nodeLevel + 1,
+					perspectives: []
 				};
 				if (!item.children) {
 					this.$set(item, 'children', []);
@@ -148,7 +161,6 @@ export default {
 			this.findItemAndDelete(this.treeItems, memberName);
 			this.saveToLocalStorage();
 		},
-
 		deleteGroup(groupName) {
 			this.findItemAndDelete(this.treeItems, groupName);
 			this.saveToLocalStorage();

@@ -75,6 +75,10 @@
   
 <script>
 import User from './user.vue'
+const _ = require('lodash');
+
+const LOCAL_STORAGE_KEY = 'checkpoints_state';
+
 export default {
 	name: 'spiderChart',
 	components: {
@@ -83,7 +87,8 @@ export default {
 	data() {
 		return {
 			isAllLevelsCompleted: false,
-			perspectives: [
+			perspectives: [],
+			initPerspectives: [
 				{
 					criteria: '요건 분석',
 					levels: [
@@ -161,12 +166,19 @@ export default {
 			labelOffset: 20,
 			maxDataValue: 5,
 			pointRadius: 4,
-			selectedTeamChartData: null,
 		};
 	},
+	mounted() {
+		this.loadCheckpointsState();
+	},
 	methods: {
-		emitClose() {
-			this.$emit('close');
+		selectedTree(item) {
+			if( item.perspectives.length == 0 ) {
+				this.perspectives = _.cloneDeep(this.initPerspectives)
+				item.perspectives = this.perspectives
+			} else {
+				this.perspectives = item.perspectives
+			}
 		},
 		getCoordinate(radius, index, total) {
 			const angle = (Math.PI * 2 * index) / total - Math.PI / 2;
@@ -184,6 +196,35 @@ export default {
 		updateLevelCompletion(perspective, level) {
 			level.isCompleted = level.checkpoints.every(checkpoint => checkpoint.checked);
 			this.checkAllLevelsCompletion();
+			this.changeCheckpointsState();
+		},
+		changeCheckpointsState() {
+			this.perspectives.map(perspective => ({
+				criteria: perspective.criteria,
+				levels: perspective.levels.map(level => ({
+					checkpoints: level.checkpoints.map(checkpoint => {
+						checkpoint.checked
+						this.$emit('changeCheckpointSave')
+					})
+				}))
+			}));
+		},
+		loadCheckpointsState() {
+			const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
+			if (savedState) {
+				const checkpointsState = JSON.parse(savedState);
+				this.perspectives.forEach((perspective, pIndex) => {
+					const savedPerspective = checkpointsState.find(p => p.criteria === perspective.criteria);
+					if (savedPerspective) {
+						perspective.levels.forEach((level, lIndex) => {
+							level.checkpoints.forEach((checkpoint, cIndex) => {
+								checkpoint.checked = savedPerspective.levels[lIndex].checkpoints[cIndex];
+							});
+							this.updateLevelCompletion(perspective, level);
+						});
+					}
+				});
+			}
 		},
 		checkAllLevelsCompletion() {
 			this.isAllLevelsCompleted = this.perspectives.every(perspective => 
