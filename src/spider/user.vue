@@ -18,8 +18,6 @@ export default {
             user: {
                 avatar: 'https://via.placeholder.com/150'
             },
-            itemsOpen: false,
-            months: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
         };
     },
     methods: {
