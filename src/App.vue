@@ -16,7 +16,7 @@
 				return-object
 				@update:active="handleTreeItemClick"
 			>
-				<template v-slot:prepend="{ item, open }">
+				<template v-slot:prepend="{ item }">
 					<v-icon v-if="!item.children" small>mdi-account</v-icon>
 					<v-icon v-if="item.children" small>mdi-domain</v-icon>
 					<v-text-field
@@ -113,7 +113,7 @@ export default {
 					name: this.newGroupName,
 					children: [],
 					nodeLevel: 0,
-					perspectives: [],
+					perspectives: null,
 				};
 				this.treeItems.push(newGroup);
 				this.newGroupName = '';
@@ -126,7 +126,7 @@ export default {
 					name: this.newMemberName,
 					children: [],
 					nodeLevel: item.nodeLevel + 1,
-					perspectives: []
+					perspectives: null
 				};
 				if (!item.children) {
 					this.$set(item, 'children', []);
