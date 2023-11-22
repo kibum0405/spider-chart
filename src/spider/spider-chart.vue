@@ -30,51 +30,51 @@
 			<v-card style="height:100%; flex:1;">
 				<User style="padding:20px 0px 20px 0px;"/>
 				<v-divider/>
-					<div v-for="part in perspectives"
-						class="clearfix"
-						style="margin:5px;"
-					>
-						<div style="width:16px; height:16px; float: left; border-radius: 5px; margin-right:5px;"
-							:style="{ backgroundColor: part.partColor }"
-						></div>
-						<div style="font-weight: 500;">{{ part.partName }}</div>
-					</div>
-					<svg :width="chartWidth" :height="chartHeight">
-						<g :transform="`translate(${chartCenterX}, ${chartCenterY})`">
-							<g v-for="(detail, index) in getAllDetail(perspectives)">
-								<line
-									:x1="0"
-									:y1="0"
-									:x2="getCoordinate(chartRadius, index, getDataLength(perspectives))[0]"
-									:y2="getCoordinate(chartRadius, index, getDataLength(perspectives))[1]"
-									stroke="lightgray"
-								/>
-								<text
-									:x="getCoordinate(chartRadius + labelOffset, index, getDataLength(perspectives))[0]"
-									:y="getCoordinate(chartRadius + labelOffset, index, getDataLength(perspectives))[1]"
-									dominant-baseline="middle"
-									text-anchor="middle"
-								>
-									{{ detail.criteria }}
-								</text>
-							</g>
-							<g>
-								<polygon
-									:points="getPolygonPoints(getDataArray(perspectives))"
-									fill="rgba(75, 192, 192, 0.2)"
-									stroke="rgba(75, 192, 192, 1)"
-								/>
-								<circle
-									v-for="(value, index) in getDataArray(perspectives)"
-									:key="`data-${index}`"
-									:cx="getCoordinate(chartRadius * (value / maxDataValue), index, getDataLength(perspectives))[0]"
-									:cy="getCoordinate(chartRadius * (value / maxDataValue), index, getDataLength(perspectives))[1]"
-									:r="pointRadius"
-									fill="rgba(75, 192, 192, 1)"
-								/>
-							</g>
+				<div v-for="part in perspectives"
+					class="clearfix"
+					style="margin:5px;"
+				>
+					<div style="width:16px; height:16px; float: left; border-radius: 5px; margin-right:5px;"
+						:style="{ backgroundColor: part.partColor }"
+					></div>
+					<div style="font-weight: 500;">{{ part.partName }}</div>
+				</div>
+				<svg :width="chartWidth" :height="chartHeight">
+					<g :transform="`translate(${chartCenterX}, ${chartCenterY})`">
+						<g v-for="(detail, index) in getAllDetail(perspectives)" :key="detail.detail.criteria">
+							<line
+								:x1="0"
+								:y1="0"
+								:x2="getCoordinate(chartRadius, index, getDataLength(perspectives))[0]"
+								:y2="getCoordinate(chartRadius, index, getDataLength(perspectives))[1]"
+								:stroke="detail.color"
+							/>
+							<text
+								:x="getCoordinate(chartRadius + labelOffset, index, getDataLength(perspectives))[0]"
+								:y="getCoordinate(chartRadius + labelOffset, index, getDataLength(perspectives))[1]"
+								dominant-baseline="middle"
+								text-anchor="middle"
+							>
+								{{ detail.detail.criteria }}
+							</text>
 						</g>
-					</svg>
+						<g>
+							<polygon
+								:points="getPolygonPoints(getDataArray(perspectives))"
+								fill="rgba(75, 192, 192, 0.2)"
+								stroke="rgba(75, 192, 200, 1)"
+							/>
+							<circle
+								v-for="(value, index) in getDataArray(perspectives)"
+								:key="`data-${index}`"
+								:cx="getCoordinate(chartRadius * (value / maxDataValue), index, getDataLength(perspectives))[0]"
+								:cy="getCoordinate(chartRadius * (value / maxDataValue), index, getDataLength(perspectives))[1]"
+								:r="pointRadius"
+								fill="rgba(75, 192, 192, 1)"
+							/>
+						</g>
+					</g>
+				</svg>
 			</v-card>
 		</v-row>
     </div>
@@ -104,7 +104,7 @@ export default {
 				biz: {
 					partIndex: 0,
 					partName: 'Biz',
-					partColor: 'rgba(255, 0, 0, 1)',
+					partColor: 'rgba(100, 149, 237, 1)',
 					details: [
 						{
 							criteria: '1',
@@ -160,7 +160,7 @@ export default {
 				dev: {
 					partIndex: 1,
 					partName: 'Dev',
-					partColor: 'rgba(0, 255, 0, 1)',
+					partColor: 'rgba(60, 179, 113, 1)',
 					details: [
 						{
 							criteria: '3',
@@ -192,7 +192,7 @@ export default {
 				ops: {
 					partIndex: 2,
 					partName: 'Ops',
-					partColor: 'rgba(0, 0, 255, 1)',
+					partColor: 'rgba(138, 43, 226, 1)',
 					details: [
 						{
 							criteria: '4',
@@ -297,18 +297,20 @@ export default {
 			}
 		},
 		checkAllLevelsCompletion() {
-			this.isAllLevelsCompleted = this.getAllDetail(this.perspectives).every(perspective => 
-				perspective.levels.every(level => level.isCompleted)
+			this.isAllLevelsCompleted = this.getAllDetail(this.perspectives).every(detailObj => 
+				detailObj.detail.levels.every(level => level.isCompleted)
 			);
 		},
 		getDataArray(perspectives) {
 			return this.getAllDetail(perspectives).map(detail => {
 				let completedLevelsCount = 0;
-				detail.levels.forEach(level => {
-					if (level.isCompleted) {
-						completedLevelsCount += 1;
-					}
-				});
+				if (detail.detail && detail.detail.levels) {
+					detail.detail.levels.forEach(level => {
+						if (level.isCompleted) {
+							completedLevelsCount += 1;
+						}
+					});
+				}
 				return completedLevelsCount;
 			});
 		},
@@ -323,17 +325,19 @@ export default {
 			return count;
 		},
 		getAllDetail(perspectives) {
-			var allDetail = []
-			
+			var allDetail = [];
 			Object.keys(perspectives).forEach(key => {
-				var perspective = perspectives[key]
+				var perspective = perspectives[key];
 				if(perspective.details != null) {
 					perspective.details.forEach(detail => {
-						allDetail.push(detail)
+						allDetail.push({ 
+							detail: detail,
+							color: perspective.partColor
+						});
 					});
 				}
 			});
-			return allDetail
+			return allDetail;
 		},
 	}
 };
